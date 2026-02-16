@@ -2,7 +2,7 @@
 name: dune-analytics-api
 version: 1.0.0
 description: "Dune Analytics API for blockchain data queries. Use for: (1) Executing/refreshing Dune queries, (2) SQL query optimization for Solana/EVM chains, (3) Understanding dex.trades vs dex_aggregator.trades, (4) Working with Solana transactions and log parsing, (5) Managing query parameters and results. Triggers on: Dune query, blockchain data, DEX trades, Solana transactions, on-chain analytics, query optimization."
-homepage: https://github.com/johnny-wanga/dune-analytics-api
+homepage: https://github.com/LZ-Web3/dune-analytics-api-skills
 metadata:
   clawdbot:
     emoji: "📊"
