@@ -1,7 +1,7 @@
 ---
 name: dune-analytics-api
 version: 1.0.0
-description: "Dune Analytics API for blockchain data queries. Use for: (1) Executing/refreshing Dune queries, (2) SQL query optimization for Solana/EVM chains, (3) Understanding dex.trades vs dex_aggregator.trades, (4) Working with Solana transactions and log parsing, (5) Managing query parameters and results. Triggers on: Dune query, blockchain data, DEX trades, Solana transactions, on-chain analytics, query optimization."
+description: "Dune Analytics API for blockchain data queries. Use for: (1) Executing/refreshing Dune queries, (2) SQL query optimization for Solana/EVM chains, (3) Understanding dex.trades vs dex_aggregator.trades, (4) Working with Solana transactions and log parsing, (5) Managing query parameters and results, (6) Uploading CSV/NDJSON data to Dune tables. Triggers on: Dune query, blockchain data, DEX trades, Solana transactions, on-chain analytics, query optimization, data upload, CSV upload."
 homepage: https://github.com/LZ-Web3/dune-analytics-api-skills
 metadata:
   clawdbot:
@@ -54,6 +54,29 @@ result = client.get_latest_result(query_id=123456)
 # Get/update SQL
 sql = client.get_query(123456).sql
 client.update_query(query_id=123456, query_sql="SELECT ...")
+
+# Upload CSV data (quick, overwrites existing)
+client.upload_csv(
+    data="col1,col2\nval1,val2",
+    description="My data",
+    table_name="my_table",
+    is_private=True
+)
+
+# Create table + insert (supports append)
+client.create_table(
+    namespace="my_user",
+    table_name="my_table",
+    schema=[{"name": "col1", "type": "varchar"}, {"name": "col2", "type": "double"}],
+    is_private=True
+)
+import io
+client.insert_data(
+    namespace="my_user",
+    table_name="my_table",
+    data=io.BytesIO(b"col1,col2\nabc,1.5"),
+    content_type="text/csv"
+)
 ```
 
 ## Subscription Tiers
@@ -99,3 +122,4 @@ Detailed documentation is organized in the `references/` directory:
 | [common-tables.md](references/common-tables.md) | Complete table reference: raw, decoded, curated (DEX/NFT/tokens/prices/labels), community data |
 | [sql-optimization.md](references/sql-optimization.md) | SQL optimization: CTE, JOIN strategies, array ops, partition pruning |
 | [wallet-analysis.md](references/wallet-analysis.md) | Wallet tracking: Solana/EVM queries, multi-chain aggregation, fee analysis |
+| [data-upload.md](references/data-upload.md) | Data upload: CSV/NDJSON upload, create table, insert data, manage tables, credits |
