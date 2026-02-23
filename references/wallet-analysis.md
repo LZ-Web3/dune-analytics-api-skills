@@ -20,6 +20,24 @@ FROM dune.lz_web3.dataset_crypto_wallet_router
 WHERE name IN ('OKX', 'BinanceWallet', 'Rabby', 'Phantom')
 ```
 
+### ⚠️ JOIN Type Casting Rule
+
+When joining `dune.lz_web3.dataset_crypto_wallet_router` with other Dune tables (e.g., `dex_aggregator.trades`, `dex.trades`), the `address` column in the router table is `varchar`. **Always cast the address column from the other Dune table to `varchar`**, not the other way around.
+
+```sql
+-- ✅ Correct: cast Dune table's address to varchar
+WHERE CAST(tx_to AS VARCHAR) IN (
+  SELECT address FROM dune.lz_web3.dataset_crypto_wallet_router
+)
+
+-- ❌ Wrong: do NOT cast router table's address to varbinary
+WHERE tx_to IN (
+  SELECT CAST(address AS VARBINARY) FROM dune.lz_web3.dataset_crypto_wallet_router
+)
+```
+
+**Reason:** The router table stores addresses as `varchar`. Converting `varchar` → `varbinary` can cause silent mismatches due to encoding/checksum differences. Always convert the Dune native table's `varbinary` address → `varchar` instead.
+
 ### Identifying by Program/Contract
 
 **Solana:** Check account_keys for known program addresses
