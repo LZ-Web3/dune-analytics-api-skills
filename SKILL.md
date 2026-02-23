@@ -1,7 +1,7 @@
 ---
 name: dune-analytics-api
 version: 1.0.0
-description: "Dune Analytics API for blockchain data queries. Use for: (1) Executing/refreshing Dune queries, (2) SQL query optimization for Solana/EVM chains, (3) Understanding dex.trades vs dex_aggregator.trades, (4) Working with Solana transactions and log parsing, (5) Managing query parameters and results, (6) Uploading CSV/NDJSON data to Dune tables. Triggers on: Dune query, blockchain data, DEX trades, Solana transactions, on-chain analytics, query optimization, data upload, CSV upload."
+description: "Dune Analytics API for blockchain data queries. Use for: (1) Discovering tables and inspecting schemas, (2) Executing/refreshing Dune queries, (3) SQL query optimization for Solana/EVM chains, (4) Understanding dex.trades vs dex_aggregator.trades, (5) Working with Solana transactions and log parsing, (6) Managing query parameters and results, (7) Uploading CSV/NDJSON data to Dune tables. Triggers on: Dune query, blockchain data, DEX trades, Solana transactions, on-chain analytics, query optimization, data upload, CSV upload, table discovery, find table, schema inspection."
 homepage: https://github.com/LZ-Web3/dune-analytics-api-skills
 metadata:
   clawdbot:
@@ -42,8 +42,9 @@ Set `DUNE_API_KEY` via environment variable, `.env` file, or agent config.
 
 | Task involves... | Read this reference |
 |-----------------|-------------------|
+| Finding tables / inspecting schema / discovering protocols | [table-discovery.md](references/table-discovery.md) |
 | Wallet / address tracking / router identification | [wallet-analysis.md](references/wallet-analysis.md) |
-| Table selection / data source lookup | [common-tables.md](references/common-tables.md) |
+| Table selection / common table names | [common-tables.md](references/common-tables.md) |
 | SQL performance / complex joins / array ops | [sql-optimization.md](references/sql-optimization.md) |
 | API calls / execution / caching / parameters | [query-execution.md](references/query-execution.md) |
 | Uploading CSV/NDJSON data to Dune | [data-upload.md](references/data-upload.md) |
@@ -135,8 +136,9 @@ Detailed documentation is organized in the `references/` directory:
 
 | File | Description |
 |------|-------------|
+| [table-discovery.md](references/table-discovery.md) | Table discovery: search tables by name, inspect schema/columns, list schemas and uploads |
 | [query-execution.md](references/query-execution.md) | API patterns: execute, update, cache, multi-day fetch, credits tracking, subqueries |
-| [common-tables.md](references/common-tables.md) | Complete table reference: raw, decoded, curated (DEX/NFT/tokens/prices/labels), community data |
+| [common-tables.md](references/common-tables.md) | Quick reference of commonly used tables: raw, decoded, curated, community data |
 | [sql-optimization.md](references/sql-optimization.md) | SQL optimization: CTE, JOIN strategies, array ops, partition pruning |
 | [wallet-analysis.md](references/wallet-analysis.md) | Wallet tracking: Solana/EVM queries, multi-chain aggregation, fee analysis |
 | [data-upload.md](references/data-upload.md) | Data upload: CSV/NDJSON upload, create table, insert data, manage tables, credits |

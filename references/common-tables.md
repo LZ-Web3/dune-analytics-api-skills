@@ -1,5 +1,7 @@
 # Dune Common Tables Reference
 
+Quick reference for frequently used tables. This is **not** an exhaustive list — if the table you need isn't listed here, use the [Table Discovery](table-discovery.md) methods to search by keyword, inspect schemas, and find decoded tables for specific protocols.
+
 ## 1. Raw Tables
 
 Table naming: `<chain>.<table>`, e.g. `ethereum.transactions`
