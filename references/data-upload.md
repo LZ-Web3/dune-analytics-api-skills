@@ -44,7 +44,7 @@ with open("data.csv") as f:
 - Table name gets `dataset_` prefix automatically → query as `dune.<namespace>.dataset_<table_name>`
 - Re-uploading to same name **overwrites** all existing data
 - Schema is auto-inferred from CSV headers and values
-- Max file size: 200MB per upload
+- Max file size: 500MB per upload
 
 ## Approach 2: Create + Insert (Recommended for Production)
 
@@ -208,7 +208,7 @@ client.insert_data(
 | Action | Credits | Limits |
 |--------|---------|--------|
 | Create table | 10 credits | — |
-| Upload CSV / Insert data | 3 credits per GB written (min 1) | 200MB per upload, 1.2GB per insert |
+| Upload CSV / Insert data | 3 credits per GB written (min 1) | 500MB per upload, 1.2GB per insert |
 | List uploads | Free | — |
 | Clear table | Free | — |
 | Delete table | Free | — |
