@@ -30,10 +30,25 @@ Set `DUNE_API_KEY` via environment variable, `.env` file, or agent config.
 
 ## ⚠️ Usage Rules
 
-1. **Prefer Private Queries** — Try `is_private=True` first. Fall back to public if it fails (free plan), and notify the user.
-2. **Don't create duplicates** — Reuse/update existing queries unless explicitly asked to create new ones.
-3. **Confirm before updating** — Ask the user before modifying an existing query.
-4. **Track credits** — Report credits consumed after each execution. See [query-execution.md](references/query-execution.md#credits-tracking).
+1. **Read before writing SQL** — Select and read the relevant reference files (see [Reference Selection](#reference-selection)) **before** writing any query. Do not skip this step.
+2. **Prefer Private Queries** — Try `is_private=True` first. Fall back to public if it fails (free plan), and notify the user.
+3. **Don't create duplicates** — Reuse/update existing queries unless explicitly asked to create new ones.
+4. **Confirm before updating** — Ask the user before modifying an existing query.
+5. **Track credits** — Report credits consumed after each execution. See [query-execution.md](references/query-execution.md#credits-tracking).
+
+## Reference Selection
+
+**Before writing any SQL, route to the correct reference file(s) based on your task:**
+
+| Task involves... | Read this reference |
+|-----------------|-------------------|
+| Wallet / address tracking / router identification | [wallet-analysis.md](references/wallet-analysis.md) |
+| Table selection / data source lookup | [common-tables.md](references/common-tables.md) |
+| SQL performance / complex joins / array ops | [sql-optimization.md](references/sql-optimization.md) |
+| API calls / execution / caching / parameters | [query-execution.md](references/query-execution.md) |
+| Uploading CSV/NDJSON data to Dune | [data-upload.md](references/data-upload.md) |
+
+If your task spans multiple categories, read **all** relevant files. Do not guess table names or query patterns — the references contain critical details (e.g., specialized tables, anti-patterns) that are not covered in this overview.
 
 ## Quick Start
 
@@ -94,6 +109,8 @@ client.insert_data(
 |-------|----------|--------|
 | `dex.trades` | Per-pool analysis | ⚠️ Inflated ~30% (multi-hop counted multiple times) |
 | `dex_aggregator.trades` | User/wallet analysis | Accurate |
+
+> ⚠️ **For wallet/address analysis**, use `dex_aggregator.trades` with `tx_to` matching router addresses from `dune.lz_web3.dataset_crypto_wallet_router`. Do **not** use `labels.all` for wallet router lookups. See [wallet-analysis.md](references/wallet-analysis.md) for full patterns.
 
 Solana has no `dex_aggregator_solana.trades`. Dedupe by `tx_id`:
 ```sql
