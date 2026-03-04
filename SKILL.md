@@ -1,7 +1,7 @@
 ---
 name: dune-analytics-api
-version: 1.0.0
-description: "Dune Analytics API for blockchain data queries. Use for: (1) Discovering tables and inspecting schemas, (2) Executing/refreshing Dune queries, (3) SQL query optimization for Solana/EVM chains, (4) Understanding dex.trades vs dex_aggregator.trades, (5) Working with Solana transactions and log parsing, (6) Managing query parameters and results, (7) Uploading CSV/NDJSON data to Dune tables. Triggers on: Dune query, blockchain data, DEX trades, Solana transactions, on-chain analytics, query optimization, data upload, CSV upload, table discovery, find table, schema inspection."
+version: 1.1.2
+description: "Dune Analytics API for blockchain data queries. Use for: (1) Discovering tables and inspecting schemas, (2) Executing/refreshing Dune queries, (3) SQL query optimization for Solana/EVM chains, (4) Understanding dex.trades vs dex_aggregator.trades, (5) Working with Solana transactions and log parsing, (6) Managing query parameters and results, (7) Uploading CSV/NDJSON data to Dune tables, (8) Finding decoded tables by contract address, (9) Searching Dune documentation. Triggers on: Dune query, blockchain data, DEX trades, Solana transactions, on-chain analytics, query optimization, data upload, CSV upload, table discovery, find table, schema inspection, contract address lookup, decoded tables, search docs."
 homepage: https://github.com/LZ-Web3/dune-analytics-api-skills
 metadata:
   clawdbot:
@@ -43,6 +43,8 @@ Set `DUNE_API_KEY` via environment variable, `.env` file, or agent config.
 | Task involves... | Read this reference |
 |-----------------|-------------------|
 | Finding tables / inspecting schema / discovering protocols | [table-discovery.md](references/table-discovery.md) |
+| Finding decoded tables by contract address | [table-discovery.md](references/table-discovery.md#search-tables-by-contract-address) |
+| Searching Dune documentation / guides / examples | [table-discovery.md](references/table-discovery.md#search-dune-documentation) |
 | Wallet / address tracking / router identification | [wallet-analysis.md](references/wallet-analysis.md) |
 | Table selection / common table names | [common-tables.md](references/common-tables.md) |
 | SQL performance / complex joins / array ops | [sql-optimization.md](references/sql-optimization.md) |
