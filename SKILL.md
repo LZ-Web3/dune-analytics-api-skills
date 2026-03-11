@@ -1,7 +1,7 @@
 ---
 name: dune-analytics-api
-version: 1.1.2
-description: "Dune Analytics API for blockchain data queries. Use for: (1) Discovering tables and inspecting schemas, (2) Executing/refreshing Dune queries, (3) SQL query optimization for Solana/EVM chains, (4) Understanding dex.trades vs dex_aggregator.trades, (5) Working with Solana transactions and log parsing, (6) Managing query parameters and results, (7) Uploading CSV/NDJSON data to Dune tables, (8) Finding decoded tables by contract address, (9) Searching Dune documentation. Triggers on: Dune query, blockchain data, DEX trades, Solana transactions, on-chain analytics, query optimization, data upload, CSV upload, table discovery, find table, schema inspection, contract address lookup, decoded tables, search docs."
+version: 2.0.0
+description: "Dune Analytics API skill for querying, analyzing, and uploading blockchain data. Use this skill whenever the user mentions Dune, on-chain data, blockchain analytics, token trading volume, DEX activity, wallet tracking, Solana/EVM transaction analysis, or wants to explore crypto data — even if they don't explicitly say 'Dune'. Also use for: running or creating Dune queries, finding blockchain tables and schemas, uploading CSV/NDJSON data to Dune, optimizing SQL for DuneSQL (Trino), checking token prices or trading pairs, analyzing wallet behavior, or any task involving dex.trades, decoded event logs, or raw blockchain transactions. Triggers on: Dune, blockchain data, on-chain, DEX trades, token volume, Solana transactions, wallet analysis, query optimization, data upload, table discovery, contract address lookup, crypto analytics, DuneSQL."
 homepage: https://github.com/LZ-Web3/dune-analytics-api-skills
 metadata:
   clawdbot:
@@ -14,6 +14,7 @@ metadata:
     primaryEnv: DUNE_API_KEY
     files:
       - "references/*"
+      - "scripts/*"
 ---
 
 # Dune Analytics API
@@ -28,13 +29,45 @@ pip install dune-client
 
 Set `DUNE_API_KEY` via environment variable, `.env` file, or agent config.
 
-## ⚠️ Usage Rules
+## Best Practices
 
-1. **Read before writing SQL** — Select and read the relevant reference files (see [Reference Selection](#reference-selection)) **before** writing any query. Do not skip this step.
-2. **Prefer Private Queries** — Try `is_private=True` first. Fall back to public if it fails (free plan), and notify the user.
-3. **Don't create duplicates** — Reuse/update existing queries unless explicitly asked to create new ones.
-4. **Confirm before updating** — Ask the user before modifying an existing query.
-5. **Track credits** — Report credits consumed after each execution. See [query-execution.md](references/query-execution.md#credits-tracking).
+1. **Read references first** — The reference files contain critical table names, anti-patterns, and chain-specific gotchas that aren't obvious from table names alone. Reading the right reference before writing SQL prevents common mistakes like using `dex.trades` for wallet analysis (which inflates volume ~30%) or missing Solana's dedup requirement.
+
+2. **Prefer private queries** — Creating queries with `is_private=True` keeps the user's workspace clean and avoids polluting the public Dune namespace. Fall back to public if it fails (free plan limitation), and let the user know.
+
+3. **Reuse before creating** — Dune charges credits per execution. Reusing or updating an existing query avoids unnecessary duplicates and makes credit tracking easier. Only create new queries when the user explicitly asks.
+
+4. **Confirm before updating** — Modifying an existing query's SQL is destructive (previous version isn't saved by default). A quick confirmation avoids overwriting work the user might want to keep.
+
+5. **Track credits** — Each execution costs credits depending on the performance tier and data scanned. Reporting credits consumed helps the user manage their budget. See [query-execution.md](references/query-execution.md#credits-tracking).
+
+## Scripts — Common Operations
+
+For common operations, use the scripts in `scripts/` to avoid writing boilerplate code every time. All scripts read `DUNE_API_KEY` from the environment automatically.
+
+| Script | Command | What it does |
+|--------|---------|-------------|
+| `dune_query.py` | `execute --query-id ID` | Execute a saved query (supports `--params`, `--performance`, `--format`) |
+| `dune_query.py` | `get_latest --query-id ID` | Get cached result without re-execution |
+| `dune_query.py` | `get_sql --query-id ID` | Print query SQL |
+| `dune_query.py` | `update_sql --query-id ID --sql "..."` | Update query SQL |
+| `dune_discover.py` | `search --keyword "uniswap"` | Search tables by keyword |
+| `dune_discover.py` | `schema --table "dex.trades"` | Show table columns and types |
+| `dune_discover.py` | `list_schemas --namespace "uniswap_v3"` | List tables in a namespace |
+| `dune_discover.py` | `contract --address "0x..."` | Find decoded tables by contract address |
+| `dune_discover.py` | `docs --keyword "dex"` | Search Dune documentation |
+| `dune_upload.py` | `upload_csv --file data.csv --table-name tbl` | Quick CSV upload (overwrites) |
+| `dune_upload.py` | `create_table --table-name tbl --namespace ns --schema '[...]'` | Create table with explicit schema |
+| `dune_upload.py` | `insert --file data.csv --table-name tbl --namespace ns` | Append data to existing table |
+
+**Example:**
+```bash
+# Execute query with parameters
+python scripts/dune_query.py execute --query-id 123456 --params '{"token":"ETH"}' --format table
+
+# Upload a CSV privately
+python scripts/dune_upload.py upload_csv --file wallets.csv --table-name my_wallets --private
+```
 
 ## Reference Selection
 
@@ -51,7 +84,7 @@ Set `DUNE_API_KEY` via environment variable, `.env` file, or agent config.
 | API calls / execution / caching / parameters | [query-execution.md](references/query-execution.md) |
 | Uploading CSV/NDJSON data to Dune | [data-upload.md](references/data-upload.md) |
 
-If your task spans multiple categories, read **all** relevant files. Do not guess table names or query patterns — the references contain critical details (e.g., specialized tables, anti-patterns) that are not covered in this overview.
+If your task spans multiple categories, read **all** relevant files. The references contain critical details (e.g., specialized tables, anti-patterns) that aren't covered in this overview — guessing table names or query patterns leads to subtle bugs.
 
 ## Quick Start
 
@@ -113,7 +146,7 @@ client.insert_data(
 | `dex.trades` | Per-pool analysis | ⚠️ Inflated ~30% (multi-hop counted multiple times) |
 | `dex_aggregator.trades` | User/wallet analysis | Accurate |
 
-> ⚠️ **For wallet/address analysis**, use `dex_aggregator.trades` with `tx_to` matching router addresses from `dune.lz_web3.dataset_crypto_wallet_router`. Do **not** use `labels.all` for wallet router lookups. See [wallet-analysis.md](references/wallet-analysis.md) for full patterns.
+> **Why this matters:** If you're analyzing a specific wallet's trading activity and use `dex.trades`, you'll see inflated volume because a single swap through an aggregator gets split into multiple pool-level trades. `dex_aggregator.trades` captures the user-level intent — one row per user swap. See [wallet-analysis.md](references/wallet-analysis.md) for full patterns.
 
 Solana has no `dex_aggregator_solana.trades`. Dedupe by `tx_id`:
 ```sql
