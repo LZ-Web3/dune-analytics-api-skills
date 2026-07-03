@@ -1,6 +1,6 @@
 ---
 name: dune-analytics-api
-version: 2.0.0
+version: 2.1.0
 description: "Dune Analytics API skill for querying, analyzing, and uploading blockchain data. Use this skill whenever the user mentions Dune, on-chain data, blockchain analytics, token trading volume, DEX activity, wallet tracking, Solana/EVM transaction analysis, or wants to explore crypto data — even if they don't explicitly say 'Dune'. Also use for: running or creating Dune queries, finding blockchain tables and schemas, uploading CSV/NDJSON data to Dune, optimizing SQL for DuneSQL (Trino), checking token prices or trading pairs, analyzing wallet behavior, or any task involving dex.trades, decoded event logs, or raw blockchain transactions. Triggers on: Dune, blockchain data, on-chain, DEX trades, token volume, Solana transactions, wallet analysis, query optimization, data upload, table discovery, contract address lookup, crypto analytics, DuneSQL."
 homepage: https://github.com/LZ-Web3/dune-analytics-api-skills
 metadata:
@@ -20,6 +20,30 @@ metadata:
 # Dune Analytics API
 
 A skill for querying and analyzing blockchain data via the [Dune Analytics](https://dune.com) API.
+
+## Local Query Registry Integration (dq)
+
+Some machines maintain a local **Dune Query Registry** — a git repo of query
+assets managed by the `dq` CLI, recognizable by a `registry.yaml` plus a
+`queries/` directory (the root may also be pointed to by the `DQ_ROOT` env
+var).
+
+**If such a registry exists, query WRITE operations are hard-constrained to
+go through dq** so local and online copies never drift:
+
+| Never do this | Do this instead |
+|---|---|
+| `client.create_query(...)` / `POST /query` | `dq create --title t --sql-file f.sql` (creates on Dune + registers locally, one atomic op) |
+| `dune_query.py update_sql` / `client.update_query` / `PATCH /query/{id}` | `dq save --query-id N --sql-file f.sql --push`, or `dq push <id>` |
+
+`dq push` keeps a per-query sync fingerprint and refuses non-fast-forward
+pushes (remote edited on dune.com since the last sync) — run `dq pull <id>`
+to reconcile first. Audit drift anytime with `dq sync --all`. After running
+a query and drawing conclusions, record them: `dq note <query_id> "..."`.
+
+READ operations (`execute`, `get_latest`, `get_sql`, table discovery, data
+uploads) are unrestricted. If no dq registry exists on the machine, this
+section does not apply.
 
 ## Setup
 
